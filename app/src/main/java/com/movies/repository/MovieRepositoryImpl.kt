@@ -11,9 +11,9 @@ internal class MovieRepositoryImpl @Inject constructor(
         val response = movieService.topRated()
         return if (response.isSuccessful) {
             response.body()?.let {
-                if(it.results.isEmpty()){
+                if (it.results.isEmpty()) {
                     MovieResult.Error("Empty List")
-                }else{
+                } else {
                     MovieResult.Success(movieMapper.toMovieList(it.results))
                 }
             } ?: MovieResult.Error("Null List")
