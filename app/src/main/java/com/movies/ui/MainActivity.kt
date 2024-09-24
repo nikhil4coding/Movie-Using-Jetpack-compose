@@ -23,11 +23,12 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: MainViewModel by viewModels()
+    private val movieListViewModel: MovieListViewModel by viewModels()
+    private val movieDetailViewModel: MovieDetailsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.getMovieList()
+        movieListViewModel.getMovieList()
         setContent {
             MoviesTheme {
                 SetupView()
@@ -43,22 +44,25 @@ class MainActivity : ComponentActivity() {
         var movieDetail: MovieDetailUI? by rememberSaveable { mutableStateOf(null) }
         var isLoading: Boolean by rememberSaveable { mutableStateOf(false) }
 
-
-        when (val viewState = viewModel.viewState.observeAsState().value) {
-            is MainViewModel.ViewState.MovieList -> {
+        when (val viewState = movieListViewModel.movieListViewState.observeAsState().value) {
+            is MovieListViewModel.MovieListViewState.Error -> Toast.makeText(this, stringResource(R.string.error, viewState.errorCode), Toast.LENGTH_SHORT).show()
+            is MovieListViewModel.MovieListViewState.Loading -> isLoading = viewState.isLoading
+            is MovieListViewModel.MovieListViewState.MovieList -> {
+                isLoading = false
                 movieList = viewState.data
             }
 
-            is MainViewModel.ViewState.Error -> {
-                Toast.makeText(this, stringResource(R.string.error, viewState.errorCode), Toast.LENGTH_SHORT).show()
-            }
+            null -> {}
+        }
 
-            is MainViewModel.ViewState.Movie -> {
+        when (val viewState = movieDetailViewModel.movieDetailViewState.observeAsState().value) {
+            is MovieDetailsViewModel.MovieDetailViewState.Error -> Toast.makeText(this, stringResource(R.string.error, viewState.errorCode), Toast.LENGTH_SHORT).show()
+            is MovieDetailsViewModel.MovieDetailViewState.Loading -> isLoading = viewState.isLoading
+            is MovieDetailsViewModel.MovieDetailViewState.Movie -> {
+                isLoading = false
                 movieDetail = viewState.data
-                navController.navigate(MOVIE_DETAILS)
             }
 
-            is MainViewModel.ViewState.Loading -> isLoading = viewState.isLoading
             null -> {}
         }
 
@@ -71,7 +75,8 @@ class MainActivity : ComponentActivity() {
                     isLoading = isLoading,
                     movieList = movieList,
                     onMovieClicked = {
-                        viewModel.getMovieDetails(it)
+                        movieDetailViewModel.getMovieDetails(it)
+                        navController.navigate(MOVIE_DETAILS)
                     }
                 )
             }
