@@ -1,7 +1,7 @@
-package com.movies.api
+package com.movies.data.api
 
-import com.movies.model.MovieDetailDTO
-import com.movies.model.MovieListResponseDTO
+import com.movies.data.MovieDetailDTO
+import com.movies.data.MovieListResponseDTO
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

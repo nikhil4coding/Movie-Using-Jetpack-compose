@@ -1,6 +1,7 @@
-package com.movies.repository
+package com.movies.data
 
-import com.movies.api.MovieService
+import com.movies.data.api.MovieService
+import com.movies.domain.MovieRepository
 import javax.inject.Inject
 
 internal class MovieRepositoryImpl @Inject constructor(

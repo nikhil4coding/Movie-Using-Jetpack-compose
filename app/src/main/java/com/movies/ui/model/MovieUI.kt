@@ -1,4 +1,4 @@
-package com.movies.model
+package com.movies.ui.model
 
 import java.io.Serializable
 

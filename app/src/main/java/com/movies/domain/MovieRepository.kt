@@ -1,4 +1,6 @@
-package com.movies.repository
+package com.movies.domain
+
+import com.movies.data.MovieResult
 
 interface MovieRepository {
     suspend fun fetchTopRatedMovies(): MovieResult

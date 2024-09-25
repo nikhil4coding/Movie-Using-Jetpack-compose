@@ -1,10 +1,10 @@
 package com.movies.di
 
 import com.google.gson.Gson
-import com.movies.api.MovieService
-import com.movies.repository.MovieMapper
-import com.movies.repository.MovieRepository
-import com.movies.repository.MovieRepositoryImpl
+import com.movies.data.api.MovieService
+import com.movies.data.MovieMapper
+import com.movies.domain.MovieRepository
+import com.movies.data.MovieRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

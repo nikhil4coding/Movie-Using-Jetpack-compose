@@ -1,8 +1,12 @@
 package com.movies.repository
 
-import com.movies.api.MovieService
-import com.movies.model.MovieDetailDTO
-import com.movies.model.MovieListResponseDTO
+import com.movies.data.api.MovieService
+import com.movies.data.MovieDetail
+import com.movies.data.MovieDetailDTO
+import com.movies.data.MovieListResponseDTO
+import com.movies.data.MovieMapper
+import com.movies.data.MovieRepositoryImpl
+import com.movies.data.MovieResult
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import junit.framework.Assert.assertEquals

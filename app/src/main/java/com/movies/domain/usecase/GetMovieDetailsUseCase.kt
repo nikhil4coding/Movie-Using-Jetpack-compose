@@ -1,7 +1,7 @@
-package com.movies.usecase
+package com.movies.domain.usecase
 
-import com.movies.repository.MovieRepository
-import com.movies.repository.MovieResult
+import com.movies.domain.MovieRepository
+import com.movies.data.MovieResult
 import javax.inject.Inject
 
 class GetMovieDetailsUseCase @Inject constructor(

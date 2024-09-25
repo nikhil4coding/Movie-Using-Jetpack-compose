@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.movies.R
-import com.movies.model.MovieDetailUI
+import com.movies.ui.model.MovieDetailUI
 
 @OptIn(
     ExperimentalMaterial3Api::class,

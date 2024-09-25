@@ -1,10 +1,11 @@
 package com.movies.usecase
 
-import com.movies.model.MovieDetailUI
-import com.movies.model.MovieResultUI
-import com.movies.repository.MovieDetail
-import com.movies.repository.MovieRepository
-import com.movies.repository.MovieResult
+import com.movies.ui.model.MovieDetailUI
+import com.movies.ui.model.MovieResultUI
+import com.movies.data.MovieDetail
+import com.movies.domain.MovieRepository
+import com.movies.data.MovieResult
+import com.movies.domain.usecase.GetMovieListUseCase
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import kotlinx.coroutines.test.runTest

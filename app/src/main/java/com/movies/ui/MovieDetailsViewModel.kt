@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.movies.model.MovieDetailUI
-import com.movies.repository.MovieResult
-import com.movies.usecase.GetMovieDetailsUseCase
+import com.movies.ui.model.MovieDetailUI
+import com.movies.data.MovieResult
+import com.movies.domain.usecase.GetMovieDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers

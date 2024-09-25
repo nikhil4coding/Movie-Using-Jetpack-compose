@@ -1,6 +1,5 @@
-package com.movies.repository
+package com.movies.data
 
-import com.movies.model.MovieDetailDTO
 import javax.inject.Inject
 
 class MovieMapper @Inject constructor() {

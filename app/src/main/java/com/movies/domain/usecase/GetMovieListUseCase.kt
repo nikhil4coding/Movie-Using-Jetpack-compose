@@ -1,6 +1,6 @@
-package com.movies.usecase
+package com.movies.domain.usecase
 
-import com.movies.repository.MovieRepository
+import com.movies.domain.MovieRepository
 import javax.inject.Inject
 
 class GetMovieListUseCase @Inject constructor(
