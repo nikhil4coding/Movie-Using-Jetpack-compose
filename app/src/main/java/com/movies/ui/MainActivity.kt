@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -41,14 +42,15 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
 
         var movieList: List<MovieDetailUI> by rememberSaveable { mutableStateOf(emptyList()) }
-        var movieDetail: MovieDetailUI? by rememberSaveable { mutableStateOf(null) }
+        var movieDetail: MovieDetailUI by rememberSaveable { mutableStateOf(MovieDetailUI()) }
+        var selectedMovieId: Long by rememberSaveable { mutableLongStateOf(0L) }
         var isLoading: Boolean by rememberSaveable { mutableStateOf(false) }
 
         when (val viewState = movieListViewModel.movieListViewState.observeAsState().value) {
             is MovieListViewModel.MovieListViewState.Error -> Toast.makeText(this, stringResource(R.string.error, viewState.errorCode), Toast.LENGTH_SHORT).show()
-            is MovieListViewModel.MovieListViewState.Loading -> isLoading = viewState.isLoading
+            is MovieListViewModel.MovieListViewState.Loading -> isLoading = true
             is MovieListViewModel.MovieListViewState.MovieList -> {
-                isLoading = false
+                isLoading = viewState.isLoading
                 movieList = viewState.data
             }
 
@@ -57,9 +59,9 @@ class MainActivity : ComponentActivity() {
 
         when (val viewState = movieDetailViewModel.movieDetailViewState.observeAsState().value) {
             is MovieDetailsViewModel.MovieDetailViewState.Error -> Toast.makeText(this, stringResource(R.string.error, viewState.errorCode), Toast.LENGTH_SHORT).show()
-            is MovieDetailsViewModel.MovieDetailViewState.Loading -> isLoading = viewState.isLoading
+            is MovieDetailsViewModel.MovieDetailViewState.Loading -> isLoading = true
             is MovieDetailsViewModel.MovieDetailViewState.Movie -> {
-                isLoading = false
+                isLoading = viewState.isLoading
                 movieDetail = viewState.data
             }
 
@@ -75,22 +77,22 @@ class MainActivity : ComponentActivity() {
                     isLoading = isLoading,
                     movieList = movieList,
                     onMovieClicked = {
-                        movieDetailViewModel.getMovieDetails(it)
+                        selectedMovieId = it
                         navController.navigate(MOVIE_DETAILS)
+                        movieDetailViewModel.getMovieDetails(it)
                     }
                 )
             }
 
             composable(MOVIE_DETAILS) {
-                movieDetail?.let {
-                    MovieDetailsView(
-                        isLoading = isLoading,
-                        movieDetails = it,
-                        onBackClicked = {
-                            navController.popBackStack()
-                        }
-                    )
-                }
+                MovieDetailsView(
+                    isLoading = isLoading,
+                    movieDetails = movieDetail,
+                    onBackClicked = {
+                        if (isLoading) isLoading = false
+                        navController.popBackStack()
+                    }
+                )
             }
         }
     }

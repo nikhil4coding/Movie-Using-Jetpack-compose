@@ -3,10 +3,10 @@ package com.movies.model
 import java.io.Serializable
 
 data class MovieDetailUI(
-    val id: Long,
-    val title: String,
-    val overview: String,
-    val posterPath: String
+    val id: Long = 0L,
+    val title: String = "",
+    val overview: String = "",
+    val posterPath: String = ""
 ) : Serializable
 
 sealed interface MovieResultUI {

@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.movies.model.MovieDetailUI
-import com.movies.model.MovieResultUI
+import com.movies.repository.MovieResult
 import com.movies.usecase.GetMovieDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -30,21 +30,30 @@ class MovieDetailsViewModel @Inject constructor(
 
     // get movie details for given movie ID
     fun getMovieDetails(movieId: Long) {
-        movieDetailViewStateEmitter.postValue(MovieDetailViewState.Loading(true))
+        movieDetailViewStateEmitter.postValue(MovieDetailViewState.Loading)
         viewModelScope.launch(movieExceptionHandler) {
             withContext(Dispatchers.IO) {
-                movieDetailViewStateEmitter.postValue(MovieDetailViewState.Loading(false))
                 when (val result = getMovieDetailsUseCase.getMovieDetails(movieId)) {
-                    is MovieResultUI.Error -> movieDetailViewStateEmitter.postValue(MovieDetailViewState.Error(result.errorCode))
-                    is MovieResultUI.Success -> movieDetailViewStateEmitter.postValue(MovieDetailViewState.Movie(result.data.first()))
+                    is MovieResult.Error -> movieDetailViewStateEmitter.postValue(MovieDetailViewState.Error(result.errorCode))
+                    is MovieResult.Success -> {
+                        val movieDetailList = result.data.map {
+                            MovieDetailUI(
+                                id = it.id,
+                                title = it.title,
+                                overview = it.overview,
+                                posterPath = it.posterPath
+                            )
+                        }
+                        movieDetailViewStateEmitter.postValue(MovieDetailViewState.Movie(movieDetailList.first()))
+                    }
                 }
             }
         }
     }
 
     sealed interface MovieDetailViewState {
-        data class Loading(val isLoading: Boolean) : MovieDetailViewState
-        data class Movie(val data: MovieDetailUI) : MovieDetailViewState
+        data object Loading : MovieDetailViewState
+        data class Movie(val data: MovieDetailUI, val isLoading: Boolean = false) : MovieDetailViewState
         data class Error(val errorCode: String) : MovieDetailViewState
     }
 }
