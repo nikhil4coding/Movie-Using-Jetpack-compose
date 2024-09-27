@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -18,7 +19,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.movies.R
 import com.movies.ui.model.MovieDetailUI
-import com.movies.ui.theme.MoviesTheme
 import com.movies.ui.viewmodel.MovieDetailsViewModel
 import com.movies.ui.viewmodel.MovieListViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         movieListViewModel.getMovieList()
         setContent {
-            MoviesTheme {
+            MaterialTheme {
                 SetupView()
             }
         }
