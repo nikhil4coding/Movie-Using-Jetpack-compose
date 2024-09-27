@@ -5,44 +5,37 @@ import com.movies.domain.MovieRepository
 import javax.inject.Inject
 
 internal class MovieRepositoryImpl @Inject constructor(
-    private val movieService: MovieService,
-    private val movieMapper: MovieMapper
+    private val movieService: MovieService
 ) : MovieRepository {
-    override suspend fun fetchTopRatedMovies(): MovieResult {
+    override suspend fun fetchTopRatedMovies(): MovieListResponse {
         val response = movieService.topRated()
         return if (response.isSuccessful) {
             response.body()?.let {
-                if (it.results.isEmpty()) {
-                    MovieResult.Error("Empty List")
-                } else {
-                    MovieResult.Success(movieMapper.toMovieList(it.results))
-                }
-            } ?: MovieResult.Error("Null List")
+                MovieListResponse.Success(it)
+            } ?: MovieListResponse.Error("Null List")
         } else {
-            MovieResult.Error("Something went Wrong")
+            MovieListResponse.Error("Something went Wrong")
         }
     }
 
-    override suspend fun fetchMovieDetails(id: Long): MovieResult {
+    override suspend fun fetchMovieDetails(id: Long): MovieDetailResponse {
         val response = movieService.movieDetails(id)
         return if (response.isSuccessful) {
             response.body()?.let {
-                MovieResult.Success(listOf(movieMapper.toMovie(it)))
-            } ?: MovieResult.Error("No details found")
+                MovieDetailResponse.Success(it)
+            } ?: MovieDetailResponse.Error("No details found")
         } else {
-            MovieResult.Error("Something went Wrong")
+            MovieDetailResponse.Error("Something went Wrong")
         }
     }
 }
 
-data class MovieDetail(
-    val id: Long,
-    val title: String,
-    val overview: String,
-    val posterPath: String
-)
+sealed interface MovieListResponse {
+    data class Success(val data: MovieListResponseDTO) : MovieListResponse
+    data class Error(val errorCode: String) : MovieListResponse
+}
 
-sealed interface MovieResult {
-    data class Success(val data: List<MovieDetail>) : MovieResult
-    data class Error(val errorCode: String) : MovieResult
+sealed interface MovieDetailResponse {
+    data class Success(val data: MovieDetailDTO) : MovieDetailResponse
+    data class Error(val errorCode: String) : MovieDetailResponse
 }

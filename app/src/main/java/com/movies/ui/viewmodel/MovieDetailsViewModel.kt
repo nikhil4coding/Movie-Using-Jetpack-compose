@@ -1,12 +1,12 @@
-package com.movies.ui
+package com.movies.ui.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.movies.ui.model.MovieDetailUI
-import com.movies.data.MovieResult
 import com.movies.domain.usecase.GetMovieDetailsUseCase
+import com.movies.domain.usecase.MovieDetailResult
+import com.movies.ui.model.MovieDetailUI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -34,17 +34,16 @@ class MovieDetailsViewModel @Inject constructor(
         viewModelScope.launch(movieExceptionHandler) {
             withContext(Dispatchers.IO) {
                 when (val result = getMovieDetailsUseCase.getMovieDetails(movieId)) {
-                    is MovieResult.Error -> movieDetailViewStateEmitter.postValue(MovieDetailViewState.Error(result.errorCode))
-                    is MovieResult.Success -> {
-                        val movieDetailList = result.data.map {
-                            MovieDetailUI(
-                                id = it.id,
-                                title = it.title,
-                                overview = it.overview,
-                                posterPath = it.posterPath
-                            )
-                        }
-                        movieDetailViewStateEmitter.postValue(MovieDetailViewState.Movie(movieDetailList.first()))
+                    is MovieDetailResult.Error -> movieDetailViewStateEmitter.postValue(MovieDetailViewState.Error(result.errorCode))
+                    is MovieDetailResult.Success -> {
+                        val movieDetailUI = MovieDetailUI(
+                            id = result.movieDetail.id,
+                            title = result.movieDetail.title,
+                            overview = result.movieDetail.overview,
+                            posterPath = result.movieDetail.posterPath
+                        )
+
+                        movieDetailViewStateEmitter.postValue(MovieDetailViewState.Movie(data = movieDetailUI))
                     }
                 }
             }
@@ -57,4 +56,3 @@ class MovieDetailsViewModel @Inject constructor(
         data class Error(val errorCode: String) : MovieDetailViewState
     }
 }
-

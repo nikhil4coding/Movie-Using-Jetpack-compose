@@ -1,12 +1,12 @@
-package com.movies.ui
+package com.movies.ui.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.movies.ui.model.MovieDetailUI
-import com.movies.data.MovieResult
 import com.movies.domain.usecase.GetMovieListUseCase
+import com.movies.domain.usecase.MovieListResult
+import com.movies.ui.model.MovieDetailUI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -34,9 +34,9 @@ class MovieListViewModel @Inject constructor(
         viewModelScope.launch(movieExceptionHandler) {
             withContext(Dispatchers.IO) {
                 when (val results = getMovieListUseCase.getTopRatedMovieList()) {
-                    is MovieResult.Error -> movieListViewStateEmitter.postValue(MovieListViewState.Error(results.errorCode))
-                    is MovieResult.Success -> {
-                        val movieList = results.data.map {
+                    is MovieListResult.Error -> movieListViewStateEmitter.postValue(MovieListViewState.Error(results.errorCode))
+                    is MovieListResult.Success -> {
+                        val movieList = results.movieDetail.map {
                             MovieDetailUI(
                                 id = it.id,
                                 title = it.title,
@@ -57,4 +57,3 @@ class MovieListViewModel @Inject constructor(
         data class Error(val errorCode: String) : MovieListViewState
     }
 }
-

@@ -1,10 +1,9 @@
 package com.movies.di
 
 import com.google.gson.Gson
-import com.movies.data.api.MovieService
-import com.movies.data.MovieMapper
-import com.movies.domain.MovieRepository
 import com.movies.data.MovieRepositoryImpl
+import com.movies.data.api.MovieService
+import com.movies.domain.MovieRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,8 +20,8 @@ object ApiModule {
 
     @Provides
     @Singleton
-    fun provideMovieRepository(movieService: MovieService, movieMapper: MovieMapper): MovieRepository {
-        return MovieRepositoryImpl(movieService, movieMapper)
+    fun provideMovieRepository(movieService: MovieService): MovieRepository {
+        return MovieRepositoryImpl(movieService)
     }
 
     @Provides

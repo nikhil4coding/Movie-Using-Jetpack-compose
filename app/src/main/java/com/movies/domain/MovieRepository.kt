@@ -1,8 +1,9 @@
 package com.movies.domain
 
-import com.movies.data.MovieResult
+import com.movies.data.MovieDetailResponse
+import com.movies.data.MovieListResponse
 
 interface MovieRepository {
-    suspend fun fetchTopRatedMovies(): MovieResult
-    suspend fun fetchMovieDetails(id: Long): MovieResult
+    suspend fun fetchTopRatedMovies(): MovieListResponse
+    suspend fun fetchMovieDetails(id: Long): MovieDetailResponse
 }

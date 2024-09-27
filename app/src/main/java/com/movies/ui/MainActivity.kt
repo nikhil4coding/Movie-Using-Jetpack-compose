@@ -19,6 +19,8 @@ import androidx.navigation.compose.rememberNavController
 import com.movies.R
 import com.movies.ui.model.MovieDetailUI
 import com.movies.ui.theme.MoviesTheme
+import com.movies.ui.viewmodel.MovieDetailsViewModel
+import com.movies.ui.viewmodel.MovieListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

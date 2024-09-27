@@ -13,51 +13,42 @@ import retrofit2.Response
 class MovieRepositoryImplTest {
 
     private val movieService: MovieService = mock()
-    private val movieMapper: MovieMapper = mock()
 
     private lateinit var repository: MovieRepositoryImpl
 
     @Before
     fun setUp() {
-        repository = MovieRepositoryImpl(movieService, movieMapper)
+        repository = MovieRepositoryImpl(movieService)
     }
 
     @Test
     fun `when fetch TopRated Movies returns empty list`() = runTest {
         whenever(movieService.topRated()).thenReturn(Response.success(MovieListResponseDTO(emptyList())))
-        whenever(movieMapper.toMovieList(emptyList())).thenReturn(emptyList())
 
         launch {
             val result = repository.fetchTopRatedMovies()
-            assertEquals(MovieResult.Error(errorCode = "Empty List"), result)
+            assertEquals(MovieListResponse.Success(MovieListResponseDTO(emptyList())), result)
         }
     }
 
     @Test
     fun `when fetch TopRated Movies returns list of items`() = runTest {
-        val movieListDto = listOf(
-            MovieDetailDTO(
-                id = 1L,
-                title = "Movie 1",
-                overview = "Movie 1 overview",
-                posterPath = "movie.jpg"
-            )
-        )
 
-        val movieList = listOf(
-            MovieDetail(
-                id = 1L,
-                title = "Movie 1",
-                overview = "Movie 1 overview",
-                posterPath = "movie.jpg"
+        val movieListResponseDTO = MovieListResponseDTO(
+            listOf(
+                MovieDetailDTO(
+                    id = 1L,
+                    title = "Movie 1",
+                    overview = "Movie 1 overview",
+                    posterPath = "movie.jpg"
+                )
             )
         )
-        whenever(movieService.topRated()).thenReturn(Response.success(MovieListResponseDTO(movieListDto)))
-        whenever(movieMapper.toMovieList(movieListDto)).thenReturn(movieList)
+        whenever(movieService.topRated()).thenReturn(Response.success(movieListResponseDTO))
 
         launch {
             val result = repository.fetchTopRatedMovies()
-            assertEquals(MovieResult.Success(movieList), result)
+            assertEquals(MovieListResponse.Success(movieListResponseDTO), result)
         }
     }
 
@@ -70,21 +61,12 @@ class MovieRepositoryImplTest {
             posterPath = "movie.jpg"
         )
 
-        val movieDetails =
-            MovieDetail(
-                id = 1L,
-                title = "Movie 1",
-                overview = "Movie 1 overview",
-                posterPath = "movie.jpg"
-            )
-
         val movieId = 123L
         whenever(movieService.movieDetails(movieId)).thenReturn(Response.success(movieDto))
-        whenever(movieMapper.toMovie(movieDto)).thenReturn(movieDetails)
 
         launch {
             val result = repository.fetchMovieDetails(movieId)
-            assertEquals(MovieResult.Success(listOf(movieDetails)), result)
+            assertEquals(MovieDetailResponse.Success(movieDto), result)
         }
     }
 }
