@@ -8,8 +8,3 @@ data class MovieDetailUI(
     val overview: String = "",
     val posterPath: String = ""
 ) : Serializable
-
-sealed interface MovieResultUI {
-    data class Success(val data: List<MovieDetailUI>) : MovieResultUI
-    data class Error(val errorCode: String) : MovieResultUI
-}
