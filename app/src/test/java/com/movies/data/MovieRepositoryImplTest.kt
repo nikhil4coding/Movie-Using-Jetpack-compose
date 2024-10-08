@@ -4,7 +4,6 @@ import com.movies.data.api.MovieService
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import junit.framework.Assert.assertEquals
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -25,10 +24,9 @@ class MovieRepositoryImplTest {
     fun `when fetch TopRated Movies returns empty list`() = runTest {
         whenever(movieService.topRated()).thenReturn(Response.success(MovieListResponseDTO(emptyList())))
 
-        launch {
-            val result = repository.fetchTopRatedMovies()
-            assertEquals(MovieListResponse.Success(MovieListResponseDTO(emptyList())), result)
-        }
+        val result = repository.fetchTopRatedMovies()
+        assertEquals(MovieListResponse.Success(MovieListResponseDTO(emptyList())), result)
+
     }
 
     @Test
@@ -46,10 +44,8 @@ class MovieRepositoryImplTest {
         )
         whenever(movieService.topRated()).thenReturn(Response.success(movieListResponseDTO))
 
-        launch {
-            val result = repository.fetchTopRatedMovies()
-            assertEquals(MovieListResponse.Success(movieListResponseDTO), result)
-        }
+        val result = repository.fetchTopRatedMovies()
+        assertEquals(MovieListResponse.Success(movieListResponseDTO), result)
     }
 
     @Test
@@ -64,9 +60,8 @@ class MovieRepositoryImplTest {
         val movieId = 123L
         whenever(movieService.movieDetails(movieId)).thenReturn(Response.success(movieDto))
 
-        launch {
-            val result = repository.fetchMovieDetails(movieId)
-            assertEquals(MovieDetailResponse.Success(movieDto), result)
-        }
+        val result = repository.fetchMovieDetails(movieId)
+        assertEquals(MovieDetailResponse.Success(movieDto), result)
+
     }
 }

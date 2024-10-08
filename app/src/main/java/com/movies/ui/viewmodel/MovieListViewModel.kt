@@ -1,7 +1,5 @@
 package com.movies.ui.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.movies.domain.usecase.GetMovieListUseCase
@@ -9,9 +7,9 @@ import com.movies.domain.usecase.MovieListResult
 import com.movies.ui.model.MovieDetailUI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
@@ -21,8 +19,8 @@ class MovieListViewModel @Inject constructor(
     private val getMovieListUseCase: GetMovieListUseCase
 ) : ViewModel() {
 
-    private val movieListViewStateEmitter = MutableLiveData<MovieListViewState>()
-    val movieListViewState: LiveData<MovieListViewState> = movieListViewStateEmitter
+    private val movieListViewEmitter = MutableStateFlow<MovieListViewState>(MovieListViewState.Idle)
+    val movieListView = movieListViewEmitter.asStateFlow()
 
     private val movieExceptionHandler: CoroutineContext = CoroutineExceptionHandler { _, exception ->
         Timber.d("Error: " + exception.message)
@@ -30,28 +28,31 @@ class MovieListViewModel @Inject constructor(
 
     // get movie list
     fun getMovieList() {
-        movieListViewStateEmitter.postValue(MovieListViewState.Loading)
+        movieListViewEmitter.value = MovieListViewState.Loading
         viewModelScope.launch(movieExceptionHandler) {
-            withContext(Dispatchers.IO) {
-                when (val results = getMovieListUseCase.getTopRatedMovieList()) {
-                    is MovieListResult.Error -> movieListViewStateEmitter.postValue(MovieListViewState.Error(results.errorCode))
-                    is MovieListResult.Success -> {
-                        val movieList = results.movieDetail.map {
-                            MovieDetailUI(
-                                id = it.id,
-                                title = it.title,
-                                overview = it.overview,
-                                posterPath = it.posterPath
-                            )
-                        }
-                        movieListViewStateEmitter.postValue(MovieListViewState.MovieList(movieList))
+            when (val results = getMovieListUseCase.getTopRatedMovieList()) {
+                is MovieListResult.Error -> {
+                    movieListViewEmitter.value = MovieListViewState.Error(results.errorCode)
+                }
+
+                is MovieListResult.Success -> {
+                    val movieList = results.movieDetail.map {
+                        MovieDetailUI(
+                            id = it.id,
+                            title = it.title,
+                            overview = it.overview,
+                            posterPath = it.posterPath
+                        )
                     }
+                    movieListViewEmitter.value = MovieListViewState.MovieList(movieList)
                 }
             }
+
         }
     }
 
     sealed interface MovieListViewState {
+        data object Idle : MovieListViewState
         data object Loading : MovieListViewState
         data class MovieList(val data: List<MovieDetailUI>, val isLoading: Boolean = false) : MovieListViewState
         data class Error(val errorCode: String) : MovieListViewState
