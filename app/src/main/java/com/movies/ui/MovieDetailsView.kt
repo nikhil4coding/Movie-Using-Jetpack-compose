@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.movies.R
+import com.movies.ui.model.ErrorUI
 import com.movies.ui.model.MovieDetailUI
 import com.movies.ui.viewmodel.MovieDetailsViewModel
 import kotlinx.coroutines.flow.StateFlow
@@ -59,7 +60,11 @@ fun MovieDetailsView(
 
     when (state) {
         is MovieDetailsViewModel.MovieDetailViewState.Error -> {
-            Toast.makeText(LocalContext.current, stringResource(R.string.error, (state as MovieDetailsViewModel.MovieDetailViewState.Error).errorCode), Toast.LENGTH_SHORT).show()
+            val errorStr = when ((state as MovieDetailsViewModel.MovieDetailViewState.Error).errorCode) {
+                ErrorUI.NULL_RESPONSE -> stringResource(R.string.empty_or_null_response)
+                ErrorUI.FAILURE_RESPONSE -> stringResource(R.string.api_failed)
+            }
+            Toast.makeText(LocalContext.current, stringResource(R.string.error, errorStr), Toast.LENGTH_SHORT).show()
         }
 
         MovieDetailsViewModel.MovieDetailViewState.Idle -> {}
@@ -85,7 +90,7 @@ fun MovieDetailsView(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        if(isLoading) isLoading = false
+                        if (isLoading) isLoading = false
                         onBackClicked()
                     }) {
                         Icon(

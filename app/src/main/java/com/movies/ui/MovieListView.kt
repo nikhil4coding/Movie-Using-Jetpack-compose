@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.movies.R
+import com.movies.ui.model.ErrorUI
 import com.movies.ui.model.MovieDetailUI
 import com.movies.ui.viewmodel.MovieListViewModel
 import kotlinx.coroutines.flow.StateFlow
@@ -57,11 +58,17 @@ fun MovieListView(
     var isLoading: Boolean by rememberSaveable { mutableStateOf(false) }
 
     when (viewState) {
-        is MovieListViewModel.MovieListViewState.Error -> Toast.makeText(
-            LocalContext.current,
-            stringResource(R.string.error, (viewState as MovieListViewModel.MovieListViewState.Error).errorCode),
-            Toast.LENGTH_SHORT
-        ).show()
+        is MovieListViewModel.MovieListViewState.Error -> {
+            val errorStr = when((viewState as MovieListViewModel.MovieListViewState.Error).errorCode){
+                ErrorUI.NULL_RESPONSE -> stringResource(R.string.empty_or_null_response)
+                ErrorUI.FAILURE_RESPONSE -> stringResource(R.string.api_failed)
+            }
+            Toast.makeText(
+                LocalContext.current,
+                stringResource(R.string.error, errorStr),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
 
         is MovieListViewModel.MovieListViewState.Loading -> isLoading = true
         is MovieListViewModel.MovieListViewState.MovieList -> {

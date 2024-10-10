@@ -4,4 +4,6 @@
     <string name="top_rated_movies">Top rated Movies</string>
     <string name="https_image_url">https://image.tmdb.org/t/p/w500%1$s</string>
     <string name="back_button">Back Button</string>
+    <string name="empty_or_null_response">Empty or NUll Response</string>
+    <string name="api_failed">API Failed</string>
 </resources>

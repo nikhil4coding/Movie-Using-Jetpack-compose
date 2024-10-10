@@ -8,3 +8,5 @@ data class MovieDetailUI(
     val overview: String = "",
     val posterPath: String = ""
 ) : Serializable
+
+enum class ErrorUI{NULL_RESPONSE, FAILURE_RESPONSE }

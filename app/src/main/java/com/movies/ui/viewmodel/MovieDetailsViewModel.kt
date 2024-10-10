@@ -2,8 +2,10 @@ package com.movies.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.movies.domain.model.MovieError
 import com.movies.domain.usecase.GetMovieDetailsUseCase
 import com.movies.domain.usecase.MovieDetailResult
+import com.movies.ui.model.ErrorUI
 import com.movies.ui.model.MovieDetailUI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -32,7 +34,13 @@ class MovieDetailsViewModel @Inject constructor(
         viewModelScope.launch(movieExceptionHandler) {
             when (val result = getMovieDetailsUseCase.getMovieDetails(movieId)) {
                 is MovieDetailResult.Error ->
-                    movieDetailViewEmitter.value = MovieDetailViewState.Error(result.errorCode)
+                    movieDetailViewEmitter.value =
+                        MovieDetailViewState.Error(
+                            when (result.errorCode) {
+                                MovieError.NULL_RESPONSE -> ErrorUI.NULL_RESPONSE
+                                MovieError.FAILURE_RESPONSE -> ErrorUI.FAILURE_RESPONSE
+                            }
+                        )
 
                 is MovieDetailResult.Success -> {
                     val movieDetailUI = MovieDetailUI(
@@ -51,6 +59,6 @@ class MovieDetailsViewModel @Inject constructor(
         data object Idle : MovieDetailViewState
         data object Loading : MovieDetailViewState
         data class Movie(val data: MovieDetailUI, val isLoading: Boolean = false) : MovieDetailViewState
-        data class Error(val errorCode: String) : MovieDetailViewState
+        data class Error(val errorCode: ErrorUI) : MovieDetailViewState
     }
 }

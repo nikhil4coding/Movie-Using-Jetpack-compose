@@ -12,9 +12,9 @@ internal class MovieRepositoryImpl @Inject constructor(
         return if (response.isSuccessful) {
             response.body()?.let {
                 MovieListResponse.Success(it)
-            } ?: MovieListResponse.Error("Null List")
+            } ?: MovieListResponse.Error(MovieApiError.NULL_RESPONSE)
         } else {
-            MovieListResponse.Error("Something went Wrong")
+            MovieListResponse.Error(MovieApiError.FAILURE_RESPONSE)
         }
     }
 
@@ -23,19 +23,20 @@ internal class MovieRepositoryImpl @Inject constructor(
         return if (response.isSuccessful) {
             response.body()?.let {
                 MovieDetailResponse.Success(it)
-            } ?: MovieDetailResponse.Error("No details found")
+            } ?: MovieDetailResponse.Error(errorCode = MovieApiError.NULL_RESPONSE)
         } else {
-            MovieDetailResponse.Error("Something went Wrong")
+            MovieDetailResponse.Error(MovieApiError.FAILURE_RESPONSE)
         }
     }
 }
 
+enum class MovieApiError { NULL_RESPONSE, FAILURE_RESPONSE }
 sealed interface MovieListResponse {
     data class Success(val data: MovieListResponseDTO) : MovieListResponse
-    data class Error(val errorCode: String) : MovieListResponse
+    data class Error(val errorCode: MovieApiError) : MovieListResponse
 }
 
 sealed interface MovieDetailResponse {
     data class Success(val data: MovieDetailDTO) : MovieDetailResponse
-    data class Error(val errorCode: String) : MovieDetailResponse
+    data class Error(val errorCode: MovieApiError) : MovieDetailResponse
 }
